@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>บันทึกการจ่ายยา</title>
+    <!--<link rel="stylesheet" href="static/S3_users.css">-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>บันทึกการจ่ายยา</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  
+
+  <script>
+  $(document).ready(function(){
+    load_data();
+    function load_data(query)
+    {
+     $.ajax({
+      url:"/search_drug",
+      method:"POST",
+      data:{query:query},
+      success:function(data)
+      {
+        $('#result_medicine').html(data);
+        $("#result_medicine").append(data.htmlresponse);
+      }
+     });
+    }
+    $('#id_search_drug').keyup(function(){
+      var search = $(this).val();
+      if(search != ''){
+      load_data(search);
+     }else{
+      load_data();
+     }
+    });
+  });
+  </script>
+  
+</head>
+<div class="w3-container w3-teal"><h1>First Aids Room  [โปรแกรมห้องพยาบาล]</h1></div>
+<div class="w3-container">
+<body>
+  <table class="styled-table">
+          <form action="" autocomplete="off" method="POST">
+            <h3 align="center">ค้นหาข้อมูลพนักงาน</h3> 
+            <div class="input-group mb-3">
+              <div class="input-group-append">
+              <input type="text" name="prs_br" value="TPBR">
+              <input type="text" name="prs_no" required >
+              <button class="btn btn-primary" type="submit">ค้นหา</button>
+            </div>
+          </form>
+      <form action="" autocomplete="off" method="POST">
+          {% if employee | length != 0 %}
+              <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>รหัสพนักงาน</th>
+                    <th>ชื่อ</th>
+                    <th>นามสกุล</th>
+                    <th>ชื่ออังกฤษ</th>
+                    <th>เพศ</th>
+                    <th>ฝ่าย/แผนก</th>
+                    <th>ตำแหน่ง</th>
+                    <th>สัญชาติ</th>
+                    <th>สาขา[BU]</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for u in employee %}
+                  <input type="text" name="prs_id" value="{{u[0]}}">
+                  <input type="text" name="prs_no" value="{{u[1]}}">
+                  <input type="text" name="prs_br" value="{{u[17]}}">
+
+                  <input type="text" name="id_drug" value="{{id_drug}}">
+
+                    <tr>
+                      <td>{{ u[0] }}</td> <!--EMPINFO.EMP_KEY-->
+                      <td>{{ u[1] }}</td> <!--PRSNFO.PRS_NO-->
+                      <td>{{ u[3] }}</td> <!--EMPINFO.EMP_NAME-->
+                      <td>{{ u[4] }}</td> <!--EMPINFO.EMP_SURNME-->
+                      <td>{{ u[5] }}</td> <!--EMPINFO.EMP_EMP_ENG-->
+                      <td>{{ u[6] }}</td> <!--EMPINFO.EMP_GENDER-->
+                      <td>{{ u[7] }}</td> <!--DEPTINFO.DEPT_THAIDESC-->
+                      <td>{{ u[8] }}</td> <!--JOBINFO.JBT_THAIDESC-->
+                      <td>{{ u[16] }}</td> <!--EMPINFO.EMP_REMARK-->
+                      <td>{{ u[17] }}</td> <!--PRSNFO.PRS_BR-->
+                    </tr>
+                  </tbody>
+            {% endfor %}
+            {% else %}
+            <div id="demo">ไม่พบข้อมูลพนักงาน.</div>
+            {% endif %}
+                
+            </table>
+            </div>
+              <!-- and so on... -->
+              <br>
+              <div class="w3-container">
+                บันทึกการจ่ายยา / การรักษา<br>
+                <button class="btn btn-primary" type="submit">เลือกยา</button>   
+                <label for="com_deseas" class="">เลือกระบบโรค :</label>
+                {% for deseas in desease_system %}
+                <select id="com_deseas" name="com_deseas">
+                  <option value="{{deseas[0]}}">{{ deseas[1]}}</option></h5
+                  {% endfor %}
+                 </select>
+                    <h5><input type="text" name="name_search_drug" id="id_search_drug" class="form-control" placeholder="ค้นหายา/เวชภัณฑ์"></h5>
+                    <!--<div id="result_medicine"></div>-->
+                    <div id="result_medicine"></div>
+                    
+                    <h5><table class="styled-table">
+                    <thead>
+                          <h6>พบ {{numrows}} รายการ </h6>
+                          <tr>
+                             <th>ID</th>
+                             <th>item_code</th>
+                             <th>item_name</th>
+                             <th>description</th>
+                             <th>การดำเนินการ5</th>
+                          </tr>
+                    </thead>
+                    <tbody>
+                      
+                          {% for row in medicins %}  
+                         <tr>
+                          <td>{{row.0}}</td>
+                          <td>{{row.1}}</td>
+                          <td>{{row.2}}</td>
+                          <td>{{row.3}}</td>
+                          <td>{{row.4}}</td>
+                          <td><a class="btn btn-primary" href="/select_drug/{{row.0}}/{{row.4}}">เลือกยา</a></td>
+                         {% endfor %} 
+                    </tbody>
+                         <h5><table class="styled-table">
+  </table>
+</body>
+
+  <style>
+    .styled-table thead tr {
+      background-color: #009879 ;
+      color: #FFFFFF;
+      text-align: left;
+    }
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+    }
+    .styled-table tbody tr {
+        border-bottom: 1px solid #000000;
+    }
+    
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+    
+    .styled-table tbody tr:last-of-type {
+        border-bottom: 2px solid #009879;
+    }
+    .styled-table tbody tr.active-row {
+        font-weight: bold;
+        color: #FFFFFF;
+    }
+    input { 
+    text-transform: uppercase;
+    }
+    input[type=text], select {
+      width: 50%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type=submit] {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+    #customers {
+      font-family: Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    #customers td, #customers th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    
+    #customers tr:nth-child(even){background-color: #f2f2f2;}
+    
+    #customers tr:hover {background-color: #ddd;}
+    
+    #customers th {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      text-align: left;
+      background-color: #04AA6D;
+      color: white;
+    }
+</style>
+<style>
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+</style>
+
+    
+</html>
